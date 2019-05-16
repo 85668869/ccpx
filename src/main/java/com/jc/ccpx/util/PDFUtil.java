@@ -7,6 +7,7 @@ import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.kernel.colors.Color;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.geom.Rectangle;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -17,18 +18,12 @@ import com.itextpdf.kernel.pdf.canvas.draw.ILineDrawer;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.font.FontProvider;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.OutputStream;
+
+import java.io.*;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
+import org.springframework.util.ResourceUtils;
 
 /**
  * @author jingchun.zhang
@@ -83,13 +78,17 @@ public class PDFUtil {
      */
     public ByteArrayOutputStream html2Pdf(String html) throws FileNotFoundException, IOException {
         ConverterProperties props = new ConverterProperties();
-//        DefaultFontProvider defaultFontProvider = new DefaultFontProvider(false, false, false);
-//        defaultFontProvider.addFont(FONT);
-//        props.setFontProvider(defaultFontProvider);
+        DefaultFontProvider defaultFontProvider = new DefaultFontProvider(false, false, false);
+        defaultFontProvider.addFont(this.getClass().getResource("/").getPath()+"fonts/simsunbd.ttf");
+        defaultFontProvider.addSystemFonts();
+        props.setFontProvider(defaultFontProvider);
 
-        FontProvider font = new FontProvider();
-        font.addSystemFonts();
-        props.setFontProvider(font);
+
+
+//        FontProvider font = new FontProvider();
+//        font.addSystemFonts();
+//        font.addFont(PDFUtil.class.getResource())
+//        props.setFontProvider(font);
 
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(bao);

@@ -52,24 +52,5 @@ public class HelloController {
         return "print_modify.html";
     }
 
-    @GetMapping("/convertPdf")
-    public void convertPdf(HttpServletResponse response, String html){
-        log.info("request html:{}", html);
-        try {
-            Document document = Jsoup.connect("http://localhost:8081/ccpx/hello/url").get();
-            document.select("div#btn_print").remove();
-            PDFUtil pdfUtil = new PDFUtil();
-            ByteArrayOutputStream stream = pdfUtil.html2Pdf(document.html());
-            response.setHeader("Expires", "0");
-            response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
-            response.setHeader("Pragma", "public");
-            response.setContentType("application/pdf");
-            OutputStream os = response.getOutputStream();
-            stream.writeTo(os);
-            os.flush();
-            os.close();
-        } catch (IOException e) {
-            log.error("printRecord {}",e.getMessage());
-        }
-    }
+
 }
