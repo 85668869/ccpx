@@ -1,7 +1,7 @@
 /**
  * Created by jingchun.zhang on 2019/5/15.
  */
-package com.jc.ccpx.dao;
+package com.jc.ccpx.dao.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

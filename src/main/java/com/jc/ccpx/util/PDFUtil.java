@@ -97,10 +97,10 @@ public class PDFUtil {
         //595.0F, 842.0F
         pdf.setDefaultPageSize(PageSize.A4);                 // 8.26  11.69
         Document document = HtmlConverter.convertToDocument(html, pdf, props);
-        EndPosition endPosition = new EndPosition();
-        LineSeparator separator = new LineSeparator(endPosition);
-        document.add(separator);
-        document.getRenderer().close();
+//        EndPosition endPosition = new EndPosition();
+//        LineSeparator separator = new LineSeparator(endPosition);
+//        document.add(separator);
+//        document.getRenderer().close();
 //        PdfPage page = pdf.getPage(1);
 //        float y = endPosition.getY() - 36;
 //        page.setMediaBox(new Rectangle(0, y, 595, 14400 - y));
