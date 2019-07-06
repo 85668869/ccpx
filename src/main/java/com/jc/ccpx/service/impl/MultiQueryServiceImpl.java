@@ -34,6 +34,7 @@ public class MultiQueryServiceImpl implements MultiQueryService{
         applicationInfoDO.setApplyOperationItem("场（厂）内专用机动车辆作业");
         applicationInfoDO.setApplyOperationItemCode("N2");
         applicationInfoDO.setJobResumeList(Arrays.asList(new ApplicationInfoDO.JobResume("2015年1月","至今", "上海外高桥樱花旅行国际贸易有限公司")));
+        applicationInfoDO.setFirstCredentialsData("2013-08-23");
         return applicationInfoDO;
     }
 }

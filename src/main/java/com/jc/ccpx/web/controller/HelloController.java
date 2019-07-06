@@ -33,7 +33,7 @@ public class HelloController {
 
     @GetMapping("/ha")
     public String ha(){
-        return "index.html";
+        return "table_fushen.html";
     }
 
     @GetMapping("/url")

@@ -1,14 +1,10 @@
 package com.jc.ccpx.dao.entry;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 public class ApplicationInfoDO {
     //身份证号
     private String idcard;
@@ -36,8 +32,14 @@ public class ApplicationInfoDO {
     private String applyOperationItem;
     //申请项目代号
     private String applyOperationItemCode;
+    //证件编号
+    private String certificateId;
+    //首次发证日期
+    private String firstCredentialsData;
     //工作简历
     private List<JobResume> jobResumeList;
+    //工作简历
+    private String jobResumeStr;
     //头像
     private String imgHead;
     //身份证-正面
@@ -47,11 +49,15 @@ public class ApplicationInfoDO {
     //印章
     private String imgSeal;
 
+
+
+
     /**
      * 工作简历
      */
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class JobResume{
         //开始时间
         private String startTime;
