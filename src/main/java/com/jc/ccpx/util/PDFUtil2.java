@@ -1,5 +1,7 @@
 package com.jc.ccpx.util;
 
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfContentByte;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -7,7 +9,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 import javax.imageio.ImageIO;
@@ -31,6 +35,8 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfWriter;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @Title: PDFUtil.java
@@ -40,7 +46,7 @@ public class PDFUtil2 {
     private static BaseFont bfChinese;
     private Document document;
     private PdfReader reader;
-    private FileOutputStream out;
+    private OutputStream out;
     private ByteArrayOutputStream bos;
     private PdfStamper stamper;
     private AcroFields acroFields;
@@ -82,6 +88,16 @@ public class PDFUtil2 {
         this.acroFields = stamper.getAcroFields();// 获取表单域
         this.out = new FileOutputStream(targetPath);
 
+    }
+
+    public PDFUtil2(URL url, HttpServletResponse response) throws IOException, DocumentException {
+        this.reader = new PdfReader(url);// 读取pdf模板
+        this.pageCount = this.reader.getNumberOfPages();// 获取pdf文件总页数
+        this.bos = new ByteArrayOutputStream();// 存储pdf文件每页的内容
+        this.stamper = new PdfStamper(this.reader, this.bos);
+        this.acroFields = stamper.getAcroFields();// 获取表单域
+        this.out = response.getOutputStream();
+        this.out = new FileOutputStream("复审申请表_填值.pdf");
     }
 
     /**
@@ -279,6 +295,22 @@ public class PDFUtil2 {
         document.add(image);
     }
 
+    public void createPicture(String fieldName, String imgpath) throws MalformedURLException, IOException, DocumentException {
+        int pageNo = acroFields.getFieldPositions(fieldName).get(0).page;
+        Rectangle signRect = acroFields.getFieldPositions(fieldName).get(0).position;
+        float x = signRect.getLeft();
+        float y = signRect.getBottom();
+        // 读图片
+        Image image = Image.getInstance(imgpath);
+        // 获取操作的页面
+        PdfContentByte under = stamper.getOverContent(pageNo);
+        // 根据域的大小缩放图片
+        image.scaleToFit(signRect.getWidth(), signRect.getHeight());
+        // 添加图片
+        image.setAbsolutePosition(x, y);
+        under.addImage(image);
+    }
+
     /**
      * 保存
      */
@@ -300,7 +332,7 @@ public class PDFUtil2 {
             stamper.close();
             PdfCopy copy = new PdfCopy(doc, out);
             doc.open();
-            for (int i = 1; i <= pageCount; i++) {
+            for (int i = 2; i <= pageCount; i++) {
                 PdfImportedPage page = copy.getImportedPage(new PdfReader(bos.toByteArray()), i);
                 copy.addPage(page);
             }
@@ -328,8 +360,13 @@ public class PDFUtil2 {
         Iterator<String> it = keys.iterator();
         while (it.hasNext()) {
             String name = it.next();
-            acroFields.setFieldProperty(name, "textfont", bf, null);
-            acroFields.setField(name, String.valueOf(values.get(name)));
+            String value = values.get(name)==null?"":values.get(name).toString();
+            if (name.startsWith("img")){
+                createPicture(name, value);
+            }else {
+                acroFields.setFieldProperty(name, "textfont", bf, null);
+                acroFields.setField(name, value);
+            }
         }
     }
 
@@ -340,19 +377,18 @@ public class PDFUtil2 {
         if (this.reader != null) {
             this.reader.close();
         }
-        if (this.out != null) {
+        if (this.out instanceof ServletOutputStream && this.out != null) {
             try {
                 this.out.close();
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                if (this.bos != null) {
-                    try {
-                        this.bos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+            }
+        }
+        if (this.bos != null) {
+            try {
+                this.bos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

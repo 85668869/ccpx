@@ -38,7 +38,18 @@ public class HelloController {
 
     @GetMapping("/url")
     public String getUrl(){
-        return "index3.html";
+        return "print.html";
+    }
+
+    @GetMapping("/print")
+    public String getUrl1(){
+        return "print1.html";
+    }
+
+
+    @GetMapping("/zige")
+    public String getUrl2(){
+        return "zige.html";
     }
 
 

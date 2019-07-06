@@ -16,6 +16,8 @@ public class Constant {
     public static final String COMPANY_CONTACT_MOBILE = "13916590826";
     //公司邮编
     public static final String COMPANY_ZIPCODE = "200131";
+    //默认工作经历
+    public static final String DEFAULET_JOB_RESUME = "持证期间未中断作业，且遵守特种设备法关于作业人员不间断保持知识更新的规定！";
 
 
 
