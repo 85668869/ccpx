@@ -2,18 +2,22 @@ package com.jc.ccpx.service.impl;
 
 import com.jc.ccpx.dao.entry.ApplicationInfoDO;
 import com.jc.ccpx.dao.mapper.MultiQueryMapper;
+import com.jc.ccpx.exception.CcpxException;
 import com.jc.ccpx.service.MultiQueryService;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.*;
 
 import com.jc.ccpx.util.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-
 import static com.jc.ccpx.constant.Constant.*;
 
+/**
+ * 综合查询
+ */
 @Service
 public class MultiQueryServiceImpl implements MultiQueryService{
 
@@ -21,7 +25,7 @@ public class MultiQueryServiceImpl implements MultiQueryService{
     MultiQueryMapper multiQueryMapper;
 
     /**
-     *
+     * 申请表
      * @param id
      * @return
      *
@@ -39,44 +43,70 @@ public class MultiQueryServiceImpl implements MultiQueryService{
      *
      */
     @Override
-    public ApplicationInfoDO getApplicationInfo(int id) {
+    public Map<String, Object> getApplicationInfo(int id) throws CcpxException {
         ApplicationInfoDO applicationInfoDO = multiQueryMapper.getApplicationInfo(id);
-        applicationInfoDO.setDegreeOfEducation(ObjectUtils.defaultIfNull(applicationInfoDO.getDegreeOfEducation(),"高中"));
-        applicationInfoDO.setZipcode(ObjectUtils.defaultIfNull(applicationInfoDO.getZipcode(), COMPANY_ZIPCODE));
-        applicationInfoDO.setCertificateId(applicationInfoDO.getIdcard());
-        applicationInfoDO.setImgHead(IMG_PATH+applicationInfoDO.getImgHead());
-        applicationInfoDO.setImgFrontOfIdCard(IMG_PATH+applicationInfoDO.getImgFrontOfIdCard());
-        applicationInfoDO.setImgBackOfIdCard(IMG_PATH+applicationInfoDO.getImgBackOfIdCard());
-        applicationInfoDO.setImgSeal(IMG_SEAL);
-        applicationInfoDO.setWorkUnit(COMPANY_NAME);
-        applicationInfoDO.setWorkUnitAddress(COMPANY_ADDRESS);
-        applicationInfoDO.setAddress(COMPANY_ADDRESS);
-        applicationInfoDO.setWorkUnitContactName(COMPANY_CONTACT_NAME);
-        applicationInfoDO.setWorkUnitContactMobile(COMPANY_CONTACT_MOBILE);
-        applicationInfoDO.setApplyOperationItem("场（厂）内专用机动车辆作业");
-        applicationInfoDO.setApplyOperationItemCode("N2");
-        applicationInfoDO.setJobResumeList(Arrays.asList(new ApplicationInfoDO.JobResume("2015年1月","至今", "上海外高桥樱花旅行国际贸易有限公司")));
-        applicationInfoDO.setFirstCredentialsData("2013-08-23");
-        applicationInfoDO.setJobResumeStr(DEFAULET_JOB_RESUME);
-        return applicationInfoDO;
+        if (applicationInfoDO==null){
+            throw new CcpxException("getApplicationInfo 数据查询不到 id："+id);
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put( "name", applicationInfoDO.getName());
+        map.put( "sex", applicationInfoDO.getSex());
+        map.put( "idcard", applicationInfoDO.getIdcard());
+        map.put( "degreeOfEducation", ObjectUtils.defaultIfNull(applicationInfoDO.getDegreeOfEducation(),"高中"));
+        map.put( "enrolmentArea", SHENQING.DEFAULET_ENROLMENT_AREA);
+        map.put( "workUnit", COMPANY_NAME);
+        map.put( "workUnitAddress", COMPANY_ADDRESS);
+        map.put( "address", COMPANY_ADDRESS);
+        map.put( "zipcode", ObjectUtils.defaultIfNull(applicationInfoDO.getZipcode(), COMPANY_ZIPCODE));
+        map.put( "mobile", COMPANY_CONTACT_PHONE);
+        map.put( "applyOperationItem", JOB_ITEMS);
+        map.put( "applyOperationItemCode", JOB_CODE);
+        map.put( "jobResumeStr", SHENQING.DEFAULET_JOB_RESUME);
+        map.put( "imgHead", StringUtils.isBlank(applicationInfoDO.getImgHead()) ? null : IMG_PATH+applicationInfoDO.getImgHead());
+        map.put( "imgFrontOfIdCard", StringUtils.isBlank(applicationInfoDO.getImgFrontOfIdCard()) ? null : IMG_PATH+applicationInfoDO.getImgFrontOfIdCard());
+        map.put( "imgBackOfIdCard", StringUtils.isBlank(applicationInfoDO.getImgBackOfIdCard()) ? null : IMG_PATH+applicationInfoDO.getImgBackOfIdCard());
+        map.put( "imgSeal", IMG_SEAL);
+        map.put("imgGdiploma", StringUtils.isBlank(applicationInfoDO.getImgGdiploma()) ? null : IMG_PATH+applicationInfoDO.getImgGdiploma());
+
+        Calendar calendar = Calendar.getInstance();
+        map.put( "nowDate", DateFormatUtils.format(calendar.getTime(), "yyyy年MM月dd日"));
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        map.put( "signDate", DateFormatUtils.format(calendar.getTime(), "yyyy年MM月dd日"));
+
+        //体检信息
+		map.put("sg", ObjectUtils.defaultIfNull(applicationInfoDO.getSg(), ""));
+		map.put("tz", ObjectUtils.defaultIfNull(applicationInfoDO.getTz(), ""));
+		map.put("lsz", ObjectUtils.defaultIfNull(applicationInfoDO.getLsz(), ""));
+		map.put("lsy", ObjectUtils.defaultIfNull(applicationInfoDO.getLsy(), ""));
+		map.put("jsz", ObjectUtils.defaultIfNull(applicationInfoDO.getJsz(), ""));
+		map.put("jsy", ObjectUtils.defaultIfNull(applicationInfoDO.getJsy(), ""));
+		map.put("ej", ObjectUtils.defaultIfNull(applicationInfoDO.getEj(), ""));
+		map.put("bsl", ObjectUtils.defaultIfNull(applicationInfoDO.getBsl(), ""));
+		map.put("xx", ObjectUtils.defaultIfNull(applicationInfoDO.getXx(), ""));
+		map.put("xy", ObjectUtils.defaultIfNull(applicationInfoDO.getXy(), ""));
+
+        return map;
     }
 
     @Override
-    public Map<String, String> getApplicationInfoOfMap(int id) {
-        ApplicationInfoDO applicationInfoDO = getApplicationInfo(id);
+    public Map<String, String> getReviewInfo(int id) throws CcpxException {
+        ApplicationInfoDO applicationInfoDO = multiQueryMapper.getApplicationInfo(id);
+        if (applicationInfoDO==null){
+            throw new CcpxException("getReviewInfo 数据查询不到 id："+id);
+        }
         Map<String, String> map = new HashMap<>();
         map.put( "name", applicationInfoDO.getName());
         map.put( "sex", applicationInfoDO.getSex());
-        map.put( "degreeOfEducation", applicationInfoDO.getDegreeOfEducation());
-        map.put( "zipcode", applicationInfoDO.getZipcode());
+        map.put( "degreeOfEducation", ObjectUtils.defaultIfNull(applicationInfoDO.getDegreeOfEducation(),"高中"));
+        map.put( "zipcode", ObjectUtils.defaultIfNull(applicationInfoDO.getZipcode(), COMPANY_ZIPCODE));
         map.put( "idcard", applicationInfoDO.getIdcard());
-        map.put( "mobile", applicationInfoDO.getMobile());
-        map.put( "certificateId", applicationInfoDO.getCertificateId());
-        map.put( "firstCredentialsData", applicationInfoDO.getFirstCredentialsData());
-        map.put( "jobResumeStr", applicationInfoDO.getJobResumeStr());
-        map.put( "imgHead", applicationInfoDO.getImgHead());
-        map.put( "imgFrontOfIdCard", applicationInfoDO.getImgFrontOfIdCard());
-        map.put( "imgBackOfIdCard", applicationInfoDO.getImgBackOfIdCard());
+        map.put( "mobile", COMPANY_CONTACT_PHONE);
+        map.put( "certificateId", applicationInfoDO.getIdcard());
+        map.put( "firstCredentialsData", "2013-08-23");
+        map.put( "jobResumeStr", FUSHEN.DEFAULET_JOB_RESUME);
+        map.put( "imgHead", StringUtils.isBlank(applicationInfoDO.getImgHead()) ? null : IMG_PATH+applicationInfoDO.getImgHead());
+		map.put( "imgFrontOfIdCard", StringUtils.isBlank(applicationInfoDO.getImgFrontOfIdCard()) ? null : IMG_PATH+applicationInfoDO.getImgFrontOfIdCard());
+		map.put( "imgBackOfIdCard", StringUtils.isBlank(applicationInfoDO.getImgBackOfIdCard()) ? null : IMG_PATH+applicationInfoDO.getImgBackOfIdCard());
         return map;
     }
 }

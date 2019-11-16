@@ -9,8 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MultiQueryMapper {
 
-    @Select({"select i.idcard,i.name,i.sex, i.pic imgHead, i.idzfilename imgFrontOfIdCard, i.idffilename imgBackOfIdCard, " +
-            "i.level degreeOfEducation, i.youbian zipcode " +
+    @Select({"select i.idcard, i.name, i.sex, ifnull(i.pic, i.pic2) imgHead, i.idzfilename imgFrontOfIdCard, i.idffilename imgBackOfIdCard, " +
+            "i.xlfilename imgGdiploma, i.level degreeOfEducation, i.youbian zipcode, " +
+			"sg, tz, lsz, lsy, jsz, jsy, ej, bsl, xy, xx " +
             "from information i " +
             "left JOIN register r ON i.idcard = r.idcard " +
             "where i.ID1=#{id} " +

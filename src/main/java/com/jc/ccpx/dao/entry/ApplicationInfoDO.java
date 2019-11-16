@@ -14,6 +14,8 @@ public class ApplicationInfoDO {
     private String sex;
     //文化程度
     private String degreeOfEducation;
+    //报名所属区
+    private String enrolmentArea;
     //工作单位
     private String workUnit;
     //工作单位地址
@@ -46,11 +48,38 @@ public class ApplicationInfoDO {
     private String imgFrontOfIdCard;
     //身份证-反面
     private String imgBackOfIdCard;
+    //学历证书
+    private String imgGdiploma;
+    //体检报告
+    private String imgTijian;
     //印章
     private String imgSeal;
+    //当前时间
+    private String nowDate;
+    //签字时间
+    private String signDate;
 
-
-
+    //体检信息
+	//身高
+	private String sg;
+	//体重
+	private String tz;
+	//裸视力-左
+	private String lsz;
+	//裸视力-右
+	private String lsy;
+	//矫正视力-左
+	private String jsz;
+	//矫正视力-右
+	private String jsy;
+	//耳疾
+	private String ej;
+	//辩色力
+	private String bsl;
+	//血压
+	private String xy;
+	//血型
+	private String xx;
 
     /**
      * 工作简历
@@ -66,5 +95,7 @@ public class ApplicationInfoDO {
         //工作单位
         private String workUnit;
     }
+
+
 
 }

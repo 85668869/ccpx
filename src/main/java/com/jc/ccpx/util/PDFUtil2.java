@@ -35,6 +35,8 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfWriter;
+import org.apache.commons.lang3.StringUtils;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
@@ -97,7 +99,7 @@ public class PDFUtil2 {
         this.stamper = new PdfStamper(this.reader, this.bos);
         this.acroFields = stamper.getAcroFields();// 获取表单域
         this.out = response.getOutputStream();
-        this.out = new FileOutputStream("复审申请表_填值.pdf");
+//        this.out = new FileOutputStream("复审申请表_填值.pdf");
     }
 
     /**
@@ -296,6 +298,9 @@ public class PDFUtil2 {
     }
 
     public void createPicture(String fieldName, String imgpath) throws MalformedURLException, IOException, DocumentException {
+        if (StringUtils.isBlank(imgpath)){
+            return;
+        }
         int pageNo = acroFields.getFieldPositions(fieldName).get(0).page;
         Rectangle signRect = acroFields.getFieldPositions(fieldName).get(0).position;
         float x = signRect.getLeft();
@@ -305,7 +310,7 @@ public class PDFUtil2 {
         // 获取操作的页面
         PdfContentByte under = stamper.getOverContent(pageNo);
         // 根据域的大小缩放图片
-        image.scaleToFit(signRect.getWidth(), signRect.getHeight());
+        image.scaleAbsolute(signRect.getWidth(), signRect.getHeight());
         // 添加图片
         image.setAbsolutePosition(x, y);
         under.addImage(image);
@@ -332,7 +337,7 @@ public class PDFUtil2 {
             stamper.close();
             PdfCopy copy = new PdfCopy(doc, out);
             doc.open();
-            for (int i = 2; i <= pageCount; i++) {
+            for (int i = 1; i <= pageCount; i++) {
                 PdfImportedPage page = copy.getImportedPage(new PdfReader(bos.toByteArray()), i);
                 copy.addPage(page);
             }

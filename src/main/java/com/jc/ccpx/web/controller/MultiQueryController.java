@@ -6,6 +6,7 @@ import com.jc.ccpx.dao.mapper.MultiQueryMapper;
 import com.jc.ccpx.exception.CcpxException;
 import com.jc.ccpx.service.MultiQueryService;
 import com.jc.ccpx.util.DataConvertUtil;
+import com.jc.ccpx.util.ObjectUtils;
 import com.jc.ccpx.util.PDFUtil2;
 import java.net.URL;
 import java.util.HashMap;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,35 +33,44 @@ import static com.jc.ccpx.constant.Constant.IMG_PATH;
 @RequestMapping("/multiquery")
 public class MultiQueryController {
 
-
-
     @Autowired
     MultiQueryService multiQueryService;
 
     @GetMapping("/shenqing")
-    public ApplicationInfoDO getApplicationInfo(Integer id) throws Exception {
+    public void getApplicationInfo(Integer id, HttpServletResponse response) throws Exception {
         if(null == id){
             throw new CcpxException("id must not null");
         }
-        return multiQueryService.getApplicationInfo(id);
+        Map map = multiQueryService.getApplicationInfo(id);
+        log.info("applicationInfo id:{}, data:{}", id, map);
+        URL url = ClassUtils.getDefaultClassLoader().getResource("file/form_shenqing.pdf");
+        PDFUtil2 pdfUtil2 = new PDFUtil2(url, response);
+        pdfUtil2.generatePDFByTemplate(map);
+        response.setHeader("Expires", "0");
+        response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+        response.setHeader("Pragma", "public");
+        response.setContentType("application/pdf");
+        response.getOutputStream().flush();
+        response.getOutputStream().close();
     }
 
-    @GetMapping("/fushenOfWord")
-    public String getReviewOfWord(Integer id, Model model) throws Exception {
-        if(null == id){
-            throw new CcpxException("id must not null");
-        }
-        ApplicationInfoDO applicationInfoDO = multiQueryService.getApplicationInfo(id);
-        model.addAttribute("user", applicationInfoDO);
-        return "table_fushen";
-    }
+//    @GetMapping("/fushenOfWord")
+//    public String getReviewOfWord(Integer id, Model model) throws Exception {
+//        if(null == id){
+//            throw new CcpxException("id must not null");
+//        }
+//        ApplicationInfoDO applicationInfoDO = multiQueryService.getApplicationInfo(id);
+//        model.addAttribute("user", applicationInfoDO);
+//        return "table_fushen";
+//    }
 
     @GetMapping("/fushen")
     public void getReviewInfo(Integer id, HttpServletResponse response) throws Exception {
         if(null == id){
             throw new CcpxException("id must not null");
         }
-        Map map = multiQueryService.getApplicationInfoOfMap(id);
+        Map map = multiQueryService.getReviewInfo(id);
+        log.info("reviewInfo id:{}, data:{}", id, map);
         URL url = ClassUtils.getDefaultClassLoader().getResource("file/form_fushen.pdf");
         PDFUtil2 pdfUtil2 = new PDFUtil2(url, response);
         pdfUtil2.generatePDFByTemplate(map);
